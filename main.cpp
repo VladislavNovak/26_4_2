@@ -1,22 +1,18 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "utilities.h"
-#include "record.h"
+#include "phone.h"
 
 using std::string;
 using std::vector;
 
 int main() {
-    Record record;
+    Phone phone{};
 
-    record.changeRecord();
-    record.changeRecord();
-    record.changeRecord();
-
-    auto result = record.getRecord();
-    std::cout << result << std::endl;
-
+    phone.doAdd();
+    phone.doAdd();
+    phone.doChange();
+    phone.doCall();
 
     return 0;
 }

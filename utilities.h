@@ -25,7 +25,7 @@ char putChar(bool isEnd, const std::string &current) {
     const std::string &allowedList = "0123456789";
     char input;
 
-    while (true) {
+    while (!isEnd) {
         std::cin >> input;
 
         if (std::cin.fail() || (allowedList.length() && !isIncludes(allowedList, input))) {
@@ -74,6 +74,17 @@ int findKeyIndexInVector(const T &key, const std::vector<T> &list) {
     }
 
     return NOT_FOUND;
+}
+
+int findKeyInVectors(const string &key, const std::vector<std::vector<string>> &list) {
+    for (auto it = list.begin(); it != list.end(); ++it) {
+        int result = findKeyIndexInVector(key, *it);
+        if (result >= 0) {
+            return (int)std::distance(list.begin(), it);
+        }
+    }
+
+    return -1;
 }
 
 int selectMenuItem(const std::vector<std::string> &list, const std::string &msg = "Select from") {
