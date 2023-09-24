@@ -9,7 +9,7 @@
 using std::string;
 using std::vector;
 
-enum class Action { change, call };
+enum class Action { change, call, sms };
 
 class Phone {
     vector<Record*> records;
@@ -43,38 +43,45 @@ class Phone {
         std::cout << records[index]->getRecord() << std::endl;
     }
 
+    void doPhoneSms(int index) {
+        auto smsMsg = putLineString("Enter SMS message");
+        std::cout << "SMS message (" << smsMsg << ") sent to subscriber:" << std::endl;
+        std::cout << records[index]->getRecord() << std::endl;
+    }
+
     void doAction(Action action) {
         if (records.empty()) {
             std::cout << "There are no records yet!" << std::endl;
             return;
         }
 
-        if (action == Action::call) {
+        if (action == Action::call || action == Action::sms) {
             vector<string> searchMenu = { "owner", "phone" };
 
             while (true) {
+                displaySubscribers();
+
                 auto selectType = selectMenuItem(searchMenu, "To select a search type");
                 if (searchMenu[selectType] == "exit") { return; }
-
-                std::cout << "List:" << std::endl;
-                for (const auto &record : records) {
-                    std::cout << record->getRecord() << std::endl;
-                }
 
                 if (searchMenu[selectType] == "owner") {
                     string input = putLineString("Enter owner's name");
                     auto ownerIndex = findKeyIndexInVector(input, getRecordsKeys());
                     if (ownerIndex >= 0) {
-                        doPhoneCall(ownerIndex);
+                        if (action == Action::call) { doPhoneCall(ownerIndex); }
+                        // Case action == Action::sms
+                        else { doPhoneSms(ownerIndex); }
                         return;
                     }
                 }
 
                 if (searchMenu[selectType] == "phone") {
-                    string input = putLineString("Enter phone (without +7");
+                    string input = putLineString("Enter phone (without +7)");
                     auto phoneIndex = findKeyInVectors(input, getRecordsValues());
                     if (phoneIndex >= 0) {
-                        doPhoneCall(phoneIndex);
+                        if (action == Action::call) { doPhoneCall(phoneIndex); }
+                        // Case action == Action::sms
+                        else { doPhoneSms(phoneIndex); }
                         return;
                     }
                 }
@@ -94,10 +101,7 @@ class Phone {
             }
 
             // Case records.size() > 1:
-            std::cout << "Enter the index of the record you want to change:" << std::endl;
-            for (int i = 0; i < records.size(); ++i) {
-                std::cout << i << ": " << records[i]->getRecord() << std::endl;
-            }
+            displaySubscribers("Enter the index of the record you want to change");
             while(true) {
                 int index;
                 std::cin >> index;
@@ -119,6 +123,18 @@ public:
         records.emplace_back(new Record());
     }
 
+    void displaySubscribers(const string &msg = "List of subscribers:") {
+        if (records.empty()) {
+            std::cout << "There are no records yet!" << std::endl;
+            return;
+        }
+
+        printf("%s:\n", msg.c_str());
+        for (int i = 0; i < records.size(); ++i) {
+            std::cout << i << ": " << records[i]->getRecord() << std::endl;
+        }
+    }
+
     void doChange() {
         std::cout << "Log: change mode" << std::endl;
         doAction(Action::change);
@@ -127,6 +143,16 @@ public:
     void doCall() {
         std::cout << "Log: call mode" << std::endl;
         doAction(Action::call);
+    }
+
+    void doSms() {
+        std::cout << "Log: sms mode" << std::endl;
+        doAction(Action::sms);
+    }
+
+    void doExit() {
+        for (const auto &item : records) { delete item; }
+        records.clear();
     }
 };
 

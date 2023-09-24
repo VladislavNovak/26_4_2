@@ -87,7 +87,7 @@ int findKeyInVectors(const string &key, const std::vector<std::vector<string>> &
     return -1;
 }
 
-int selectMenuItem(const std::vector<std::string> &list, const std::string &msg = "Select from") {
+int selectMenuItem(const std::vector<std::string> &list, const std::string &msg = "Select and") {
     string commands;
     for (const auto &item : list)
         commands += (item + (item != list[list.size() - 1] ? "|" : ""));
